@@ -15,8 +15,3 @@ router.get('/', (req, res) => {
 });
 
 export default router
-
-
-// https://downmark.herokuapp.com/?u=https%3A%2F%2Fwww.ilpost.it%2F2022%2F02%2F23%2Feuropa-debolezza-ucraina%2F&tags[]=foo&tags[]=
-
-// javascript:(function()%7Bdocument.location.href%3D%22http%3A%2F%2Flocalhost%3A3000%2Fobsidian%3Fu%3D%22%2BencodeURIComponent(document.location)%3B%7D)()
