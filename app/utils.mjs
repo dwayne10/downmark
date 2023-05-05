@@ -12,7 +12,7 @@ import TurndownService from 'turndown'
 import turndownPluginGfm from 'turndown-plugin-gfm'
 import crypto from 'crypto'
 
-const defaultTags = ['clippings']
+const defaultTags = ['#clippings-from-chrome']
 
 const getHTMLFromURL = (url) => {
   return new Promise((resolve, reject) => {
@@ -46,8 +46,12 @@ const getHTMLFromURL = (url) => {
   });
 };
 
+// const getFileName = (fileName) => {
+//   return slugify(fileName.slice(0, 100) + '.md', { remove: /[*+~.()'"!:@\/\\]/g })
+// }
+
 const getFileName = (fileName) => {
-  return slugify(fileName.slice(0, 100) + '.md', { remove: /[*+~.()'"!:@\/\\]/g })
+  return fileName.replace(':', '').replace(/\//g, '-').replace(/\\/g, '-');
 }
 
 const convertDate = (date) => {
@@ -68,11 +72,10 @@ const parseHTML = (htmlContent, url) => {
 
   let title = result?.title || 'no title ' + crypto.randomBytes(8).toString('hex')
   let content = result?.content || result?.excerpt || 'Cannot parse content...'
-  let byline = result?.byline || ''
 
   const sanitizedContent = DOMPurify.sanitize(content, { USE_PROFILES: { html: true } })
 
-  return { title, content: sanitizedContent, byline, excerpt: result.excerpt }
+  return { title, content: sanitizedContent, excerpt: result?.excerpt || '' }
 }
 
 const convertToMarkdown = (content) => {
@@ -85,31 +88,32 @@ const convertToMarkdown = (content) => {
   return turndownService.turndown(content)
 }
 
-const buildMarkdownWithFrontmatter = ({markdown, tags, url, byline}) => {
+const buildMarkdownWithFrontmatter = ({ markdown, tags, url, excerpt }) => {
   const markdownWithFrontmatter = "---\n"
     + "date: " + convertDate(new Date()) + "\n"
-    + "tags: [" + [...defaultTags, ...tags].join(' ') + "]\n"
     + "source: " + url + "\n"
-    + "author: " + byline + "\n"
+    + "---\n\n"
+    + "Tags:: " + [...defaultTags, ...tags].join(' ') + "\n\n"
+    + "> ## Excerpt" + "\n"
+    + "> " + excerpt + "\n"
     + "---\n\n"
     + markdown
 
-    return markdownWithFrontmatter
+  return markdownWithFrontmatter
 }
 
-const buildObsidianURL = ({vault = null, folder = 'Clippings/', fileName, fileContent}) => {
-  let vaultName
+const buildObsidianURL = ({ vault = 'Obsidian Notes', folder = 'Inbox/', fileName, fileContent }) => {
+  // let vaultName
 
-  if (vault) {
-    vaultName = '&vault=' + encodeURIComponent(`${vault}`)
-  } else {
-    vaultName = ''
-  }
+  // if (vault) {
+  //   vaultName = '&vault=' + encodeURIComponent(`${vault}`)
+  // } else {
+  //   vaultName = ''
+  // }
 
-  return "obsidian://new?"
-    + "name=" + encodeURIComponent(folder + fileName)
+  return "obsidian://new?vault=" + encodeURIComponent(`${vault}`)
+    + "&file=" + encodeURIComponent(folder + fileName)
     + "&content=" + encodeURIComponent(fileContent)
-    + vaultName
 }
 
 

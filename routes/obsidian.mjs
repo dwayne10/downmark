@@ -10,7 +10,7 @@ import {
   buildObsidianURL
 } from '../app/utils.mjs'
 
-router.get('/', function(req, res, next) {
+router.get('/', function (req, res, next) {
   (async (url, download, tags = []) => {
     var htmlContent = ''
 
@@ -22,13 +22,13 @@ router.get('/', function(req, res, next) {
       return
     }
 
-    let { title, content, byline } = parseHTML(htmlContent, url)
+    let { title, content, excerpt } = parseHTML(htmlContent, url)
 
     const fileName = getFileName(title)
 
     let markdown = convertToMarkdown(content)
 
-    const fileContent = buildMarkdownWithFrontmatter({markdown, tags, url, byline})
+    const fileContent = buildMarkdownWithFrontmatter({ markdown, tags, url, excerpt })
 
     let redirectToURL = buildObsidianURL({ fileName, fileContent })
     res.set('Location', redirectToURL)

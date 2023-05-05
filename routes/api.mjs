@@ -7,7 +7,7 @@ import {
   convertToMarkdown
 } from '../app/utils.mjs'
 
-router.get('/', function(req, res, next) {
+router.get('/', function (req, res, next) {
   (async (url) => {
     var htmlContent = ''
 
@@ -19,11 +19,11 @@ router.get('/', function(req, res, next) {
       return
     }
 
-    let { title, content, excerpt, byline } = parseHTML(htmlContent, url)
+    let { title, content, excerpt } = parseHTML(htmlContent, url)
 
     let markdown = convertToMarkdown(content)
 
-    res.json({ title, content: markdown, excerpt, byline });
+    res.json({ title, content: markdown, excerpt });
   })(req.query.u);
 });
 
